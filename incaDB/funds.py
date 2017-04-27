@@ -47,57 +47,66 @@ def store_multi(request):
 		funds = []
 		
 		f = request.FILES['file']
-		for line in f:
-			line_words = line.decode('euc-kr').split(',')
-			if 'KLV' in line_words[0]:
-				print "---------------------------"
-				for i, col in enumerate(line_words):	
-					print col
-				print "---------------------------"
 
-				# 업데이트 
-				try:
-					fund_model = Fund.objects.get(FundCode=line_words[0])
-					fund_model.FundCode = line_words[0]
-					fund_model.FundName = line_words[3]
-					fund_model.EstabDay = line_words[4]
-					fund_model.SDAY = line_words[5]
-					fund_model.EDAY = line_words[6]
-					fund_model.CmpCode = line_words[7]
-					fund_model.InvestRegion = line_words[8]
-					fund_model.FundTypeName = line_words[9]
-					fund_model.SalesCode = line_words[10]
-					fund_model.SalesNM = line_words[11]
-					fund_model.MgrName = line_words[12]
-					fund_model.MgrInfo = line_words[13]
-					fund_model.change()
-					fund_model.save(update_fields=['FundCode', 
-						'FundName', 'EstabDay', 'SDAY', 'EDAY', 'CmpCode', 
-						'InvestRegion', 'FundTypeName', 'SalesCode', 
-						'SalesNM', 'MgrName', 'MgrInfo'])
-					
-					print "model exists"
-				# 생성 
-				except:
-					fund_model = Fund(
-						FundCode = line_words[0], 
-						FundName = line_words[3], 
-						EstabDay = line_words[4], 
-						SDAY = line_words[5], 
-						EDAY = line_words[6], 
-						CmpCode = line_words[7], 
-						InvestRegion = line_words[8], 
-						FundTypeName = line_words[9], 
-						SalesCode = line_words[10], 
-						SalesNM = line_words[11], 
-						MgrName = line_words[12], 
-						MgrInfo = line_words[13]
-					)
-					fund_model.publish()
-					fund_model.save() 
-					cnt = cnt + 1
+		if f.name == 'KFRIN01':
+			for line in f:
+				line_words = line.decode('euc-kr').split('|')
+				if 'KLV' in line_words[0]:
+					print "---------------------------"
+					for i, col in enumerate(line_words):
+						if i == 0 or i == 3:
+							print col
+					print "---------------------------"
+
+					# 업데이트 
+					try:
+						fund_model = Fund.objects.get(FundCode=line_words[0])
+						fund_model.FundCode = line_words[0]
+						fund_model.FundName = line_words[3]
+						fund_model.EstabDay = line_words[4]
+						fund_model.SDAY = line_words[5]
+						fund_model.EDAY = line_words[6]
+						fund_model.CmpCode = line_words[7]
+						fund_model.InvestRegion = line_words[8]
+						fund_model.FundTypeName = line_words[9]
+						fund_model.SalesCode = line_words[10]
+						fund_model.SalesNM = line_words[11]
+						fund_model.MgrName = line_words[12]
+						fund_model.MgrInfo = line_words[13]
+						fund_model.change()
+						fund_model.save(update_fields=['FundCode', 
+							'FundName', 'EstabDay', 'SDAY', 'EDAY', 'CmpCode', 
+							'InvestRegion', 'FundTypeName', 'SalesCode', 
+							'SalesNM', 'MgrName', 'MgrInfo'])
+						
+						print "model exists"
+					# 생성 
+					except:
+						fund_model = Fund(
+							FundCode = line_words[0], 
+							FundName = line_words[3], 
+							EstabDay = line_words[4], 
+							SDAY = line_words[5], 
+							EDAY = line_words[6], 
+							CmpCode = line_words[7], 
+							InvestRegion = line_words[8], 
+							FundTypeName = line_words[9], 
+							SalesCode = line_words[10], 
+							SalesNM = line_words[11], 
+							MgrName = line_words[12], 
+							MgrInfo = line_words[13]
+						)
+						fund_model.publish()
+						fund_model.save() 
+						cnt = cnt + 1
+
+		# print f.name 
+		
+		# save_or_update_model(funds)
+		else:
+			print "file is not allowed"
+
 	print cnt
-	# save_or_update_model(funds)
 
 	return HttpResponseRedirect(reverse('funds_index'))
 

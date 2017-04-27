@@ -17,34 +17,50 @@ def store_multi(request):
 	if 'file' in request.FILES:
 		
 		f = request.FILES['file']
-		for line in f:
-			line_words = line.decode('euc-kr').split(',')
-			if 'KLV' in line_words[1]:
-				print "---------------------------"
-				for i, col in enumerate(line_words):	
-					if i ==5:
-						print col
-				print "---------------------------"
+		
+		if f.name == 'KFRIN05':
+			for line in f:
+				line_words = line.decode('euc-kr').split('|')
+				if 'KLV' in line_words[1]:
+					print "---------------------------"
+					for i, col in enumerate(line_words):	
+						if i == 1 or i == 3:
+							print col
+					print "---------------------------"
 
-				# 업데이트 
-				try:
-					price_model = Price.objects.get(fund_FundCode=line_words[1], Tradeday=line_words[0])
-					print "model exists"
-					cnt = cnt + 1
-				# 생성 
-				except:
-					fund_model = Fund.objects.get(FundCode=line_words[1])
-					price_model = Price(
-						fund = fund_model,
-						Tradeday = line_words[0],
-						Price = Decimal(line_words[4]),
-						Upndown = Decimal(line_words[5] or 0.0),
-					)
-					price_model.publish()
-					price_model.save() 
-					print "price related to the fund save in db"
-					
-	print cnt 
+					# 업데이트 
+					try:
+						# price_models = Price.objects.filter(Tradeday=line_words[0])
+						# for p in price_models:
+						# 	p.delete()
+						# print "model deleted successfully"
+						fund_model = Fund.objects.get(FundCode=line_words[1])
+						price_models = Price.objects.get(fund_id=fund_model.id, Tradeday=line_words[0])
+						print "price model exists"
+						cnt = cnt + 1
+					# 생성 
+					except:
+						try:
+							fund_model = Fund.objects.get(FundCode=line_words[1])
+							price_model = Price(
+								fund = fund_model,
+								Tradeday = line_words[0],
+								Price = Decimal(line_words[4]),
+								Upndown = Decimal(line_words[5] or 0.0),
+							)
+							price_model.publish()
+							price_model.save() 
+							print "price related to the fund save in db"
+						# 기준가에 대응되는 펀드가 없는 경우 기준가 정보는 저장하지 않음 
+						except:
+							print "the fund model related to price dosen't exist in db"
+
+		# print f.name			
+		
+		else:
+			print "file is not allowed" 
+			
+	print cnt
 	
 	return HttpResponseRedirect(reverse('funds_index'))
 
