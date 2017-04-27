@@ -1,0 +1,10 @@
+{% extends 'incaDB/base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<a class="btn btn-default pull-right" href="/admin">
+<i class="glyphicon glyphicon-cog"></i> Admin</a>
+
+<a class="btn btn-default pull-right" href="{% url 'funds_create' %}">
+<i class="glyphicon glyphicon-plus"></i> Create</a>
+{% endblock %}
