@@ -49,3 +49,27 @@ class Price(models.Model):
 	def __str__(self):
 		name = self.fund.FundCode + '  ' + self.fund.FundName + '   ' + self.Tradeday
 		return name.encode('utf-8')
+
+
+class Insurance(models.Model):
+	FundCode = models.CharField(max_length=20,  blank=True, null=True)
+	InsuType = models.CharField(max_length=2,  blank=True, null=True)
+	ProdCode = models.CharField(max_length=20,  blank=True, null=True)
+	SalesCode = models.CharField(max_length=3,  blank=True, null=True)
+	ProdName = models.CharField(max_length=150,  blank=True, null=True)
+	ProdFlag = models.CharField(max_length=50,  blank=True, null=True)
+	ProdType = models.CharField(max_length=50,  blank=True, null=True)
+	SaleSday = models.CharField(max_length=8,  blank=True, null=True)
+	SaleEday = models.CharField(max_length=8,  blank=True, null=True)
+	funds = models.ManyToManyField(Fund)
+	created_date = models.DateTimeField(blank=True, null=True)
+	updated_date = models.DateTimeField(blank=True, null=True)
+
+	def publish(self):
+		self.created_date = timezone.now()
+		
+	def change(self):
+		self.updated_date = timezone.now()
+
+	def __str__(self):
+		return self.ProdName.encode('utf-8')
