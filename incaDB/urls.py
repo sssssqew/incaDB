@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from . import views
 from . import funds
 from . import prices 
+from . import insurances
 
 # url order is very important 
 urlpatterns = [
@@ -16,10 +17,12 @@ urlpatterns = [
 	url(r'^funds/store-single/$', funds.store_single, name='funds_store_single'),
 	url(r'^funds/store-multi/$', funds.store_multi, name='funds_store_multi'),
 	url(r'^prices/store-multi/$', prices.store_multi, name='price_store_multi'),
+	url(r'^insurances/store-multi/$', insurances.store_multi, name='insurances_store_multi'),
 	# url(r'^funds/last-prices$', funds.prices_latest, name='funds_prices_latest'),
 	# url(r'^funds/(?P<value>.+)/prices$', funds.prices_word, name='funds_prices_word'),
 	
 	# url(r'^funds/(?P<value>.+)/$', funds.show, name='funds_show'),
+	url(r'^prices/csv/$', prices.csvWriter, name="download_to_csv"),
 ]
 
 urlpatterns += static('/upload/', document_root=settings.MEDIA_ROOT)
