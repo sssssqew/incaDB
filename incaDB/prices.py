@@ -11,6 +11,8 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
+import csv
+
 def store_multi(request):
 	cnt = 0
 	# 5번 파일 읽어서 저장하기 
@@ -59,8 +61,41 @@ def store_multi(request):
 		
 		else:
 			print "file is not allowed" 
-			
+
 	print cnt
 	
 	return HttpResponseRedirect(reverse('funds_index'))
+
+
+def csvWriter(request):
+	today = datetime.now().strftime("%Y-%m-%d")
+	# Create the HttpResponse object with the appropriate CSV header.
+	response = HttpResponse(content_type='text/csv')
+	filename = "insurance_" + today+".csv"
+	response['Content-Disposition'] = 'attachment; filename=' + filename
+	writer = csv.writer(response)
+
+	# 펀드 종목코드 종목명 출력 
+	funds = Fund.objects.all()
+	for fund in funds:
+		writer.writerow([fund.FundCode.encode('euc-kr'), fund.FundName.encode('euc-kr'), 'KOR'])
+
+	# 특정펀드에 해당하는 기준가 출력 
+	# fund = Fund.objects.get(FundCode='KLVL780EDF3')
+	# print fund.FundName
+
+	# prices = Price.objects.filter(fund_id=fund.id)
+	# for price in prices:
+	# 	writer.writerow([fund.FundCode.encode('euc-kr'), price.Tradeday.encode('euc-kr'), price.Price])
+
+	# 전체펀드에 해당하는 기준가 출력 
+	# funds = Fund.objects.all()
+
+	# for fund in funds:
+	# 	prices = Price.objects.filter(fund_id=fund.id)
+	# 	for price in prices:
+	# 		writer.writerow([fund.FundCode.encode('euc-kr'), price.Tradeday.encode('euc-kr'), price.Price, price.Price, price.Price, price.Price])
+
+	return response
+
 
